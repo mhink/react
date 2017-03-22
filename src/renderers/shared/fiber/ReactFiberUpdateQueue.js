@@ -38,13 +38,13 @@ type PartialState<State, Props> =
 type Callback = mixed;
 
 type Update = {
-  priorityLevel: PriorityLevel,
-  partialState: PartialState<any, any>,
-  callback: Callback | null,
-  isReplace: boolean,
-  isForced: boolean,
-  isTopLevelUnmount: boolean,
-  next: Update | null,
+  priorityLevel     : PriorityLevel,
+  partialState      : PartialState<any, any>,
+  callback          : Callback | null,
+  isReplace         : boolean,
+  isForced          : boolean,
+  isTopLevelUnmount : boolean,
+  next              : Update | null,
 };
 
 // Singly linked-list of updates. When an update is scheduled, it is added to
@@ -116,7 +116,10 @@ function ensureUpdateQueue(fiber : Fiber) : UpdateQueue {
 }
 
 // Clones an update queue from a source fiber onto its alternate.
-function cloneUpdateQueue(current : Fiber, workInProgress : Fiber) : UpdateQueue | null {
+function cloneUpdateQueue(
+  current         : Fiber,
+  workInProgress  : Fiber
+) : UpdateQueue | null {
   const currentQueue = current.updateQueue;
   if (!currentQueue) {
     // The source fiber does not have an update queue.
@@ -217,7 +220,10 @@ function findInsertionPosition(queue, update) : Update | null {
 // we shouldn't make a copy.
 //
 // If the update is cloned, it returns the cloned update.
-function insertUpdate(fiber : Fiber, update : Update) : Update | null {
+function insertUpdate(
+  fiber   : Fiber,
+  update  : Update
+) : Update | null {
   const queue1 = ensureUpdateQueue(fiber);
   const queue2 = fiber.alternate ? ensureUpdateQueue(fiber.alternate) : null;
 
@@ -275,11 +281,12 @@ function insertUpdate(fiber : Fiber, update : Update) : Update | null {
 }
 
 function addUpdate(
-  fiber : Fiber,
-  partialState : PartialState<any, any> | null,
-  callback : mixed,
+  fiber         : Fiber,
+  partialState  : PartialState<any, any> | null,
+  callback      : mixed,
   priorityLevel : PriorityLevel
 ) : void {
+
   const update = {
     priorityLevel,
     partialState,
@@ -291,14 +298,16 @@ function addUpdate(
   };
   insertUpdate(fiber, update);
 }
+
 exports.addUpdate = addUpdate;
 
 function addReplaceUpdate(
-  fiber : Fiber,
-  state : any | null,
-  callback : Callback | null,
+  fiber         : Fiber,
+  state         : any | null,
+  callback      : Callback | null,
   priorityLevel : PriorityLevel
 ) : void {
+
   const update = {
     priorityLevel,
     partialState: state,
@@ -308,15 +317,18 @@ function addReplaceUpdate(
     isTopLevelUnmount: false,
     next: null,
   };
+
   insertUpdate(fiber, update);
 }
+
 exports.addReplaceUpdate = addReplaceUpdate;
 
 function addForceUpdate(
-  fiber : Fiber,
-  callback : Callback | null,
+  fiber         : Fiber,
+  callback      : Callback | null,
   priorityLevel : PriorityLevel
 ) : void {
+
   const update = {
     priorityLevel,
     partialState: null,
@@ -328,6 +340,7 @@ function addForceUpdate(
   };
   insertUpdate(fiber, update);
 }
+
 exports.addForceUpdate = addForceUpdate;
 
 function getPendingPriority(queue : UpdateQueue) : PriorityLevel {
@@ -336,11 +349,12 @@ function getPendingPriority(queue : UpdateQueue) : PriorityLevel {
 exports.getPendingPriority = getPendingPriority;
 
 function addTopLevelUpdate(
-  fiber : Fiber,
-  partialState : PartialState<any, any>,
-  callback : Callback | null,
+  fiber         : Fiber,
+  partialState  : PartialState<any, any>,
+  callback      : Callback | null,
   priorityLevel : PriorityLevel
 ) : void {
+
   const isTopLevelUnmount = Boolean(
     partialState &&
     partialState.element === null
@@ -375,7 +389,12 @@ function addTopLevelUpdate(
 }
 exports.addTopLevelUpdate = addTopLevelUpdate;
 
-function getStateFromUpdate(update, instance, prevState, props) {
+function getStateFromUpdate(
+  update,
+  instance,
+  prevState, 
+  props
+) {
   const partialState = update.partialState;
   if (typeof partialState === 'function') {
     const updateFn = partialState;
@@ -386,12 +405,12 @@ function getStateFromUpdate(update, instance, prevState, props) {
 }
 
 function beginUpdateQueue(
-  workInProgress : Fiber,
-  queue : UpdateQueue,
-  instance : any,
-  prevState : any,
-  props : any,
-  priorityLevel : PriorityLevel
+  workInProgress  : Fiber,
+  queue           : UpdateQueue,
+  instance        : any,
+  prevState       : any,
+  props           : any,
+  priorityLevel   : PriorityLevel
 ) : any {
   if (__DEV__) {
     // Set this flag so we can warn if setState is called inside the update

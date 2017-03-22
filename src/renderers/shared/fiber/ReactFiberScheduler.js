@@ -1094,7 +1094,10 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(config : HostConfig<T, P, 
     }
   }
 
-  function scheduleUpdate(fiber : Fiber, priorityLevel : PriorityLevel) {
+  function scheduleUpdate(
+    fiber         : Fiber,
+    priorityLevel : PriorityLevel
+  ) {
     if (priorityLevel <= nextPriorityLevel) {
       // We must reset the current unit of work pointer so that we restart the
       // search from the root during the next tick, in case there is now higher
@@ -1228,12 +1231,12 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(config : HostConfig<T, P, 
   }
 
   return {
-    scheduleUpdate: scheduleUpdate,
-    getPriorityContext: getPriorityContext,
-    performWithPriority: performWithPriority,
-    batchedUpdates: batchedUpdates,
-    unbatchedUpdates: unbatchedUpdates,
-    syncUpdates: syncUpdates,
-    deferredUpdates: deferredUpdates,
+    scheduleUpdate,
+    getPriorityContext,
+    performWithPriority,
+    batchedUpdates,
+    unbatchedUpdates,
+    syncUpdates,
+    deferredUpdates,
   };
 };
