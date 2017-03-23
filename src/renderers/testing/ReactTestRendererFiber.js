@@ -111,33 +111,33 @@ var TestRenderer = ReactFiberReconciler({
   },
 
   prepareUpdate(
-    testElement : Instance,
-    type : string,
-    oldProps : Props,
-    newProps : Props,
+    testElement           : Instance,
+    type                  : string,
+    oldProps              : Props,
+    newProps              : Props,
     rootContainerInstance : Container,
-    hostContext : Object,
+    hostContext           : Object,
   ) : null | {} {
     return UPDATE_SIGNAL;
   },
 
   commitUpdate(
-    instance : Instance,
-    updatePayload : {},
-    type : string,
-    oldProps : Props,
-    newProps : Props,
-    internalInstanceHandle : Object,
+    instance              : Instance,
+    updatePayload         : {},
+    type                  : string,
+    oldProps              : Props,
+    newProps              : Props,
+    internalInstanceHandle: Object,
   ) : void {
     instance.type = type;
     instance.props = newProps;
   },
 
   commitMount(
-    instance : Instance,
-    type : string,
-    newProps : Props,
-    internalInstanceHandle : Object
+    instance              : Instance,
+    type                  : string,
+    newProps              : Props,
+    internalInstanceHandle: Object
   ) : void {
     // noop
   },

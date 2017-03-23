@@ -70,15 +70,15 @@ type Props = {
   autoFocus ?: boolean,
   children ?: mixed,
 };
+
 type Instance = Element;
+
 type TextInstance = Text;
 
-type HostContextDev = {
-  namespace : string,
-  ancestorInfo : mixed,
+type HostContext = {
+  namespace     : string,
+  ancestorInfo  : mixed,
 };
-type HostContextProd = string;
-type HostContext = HostContextDev | HostContextProd;
 
 let eventsEnabled : ?boolean = null;
 let selectionInformation : ?mixed = null;
@@ -136,40 +136,51 @@ function shouldAutoFocusHostComponent(
 
 var DOMRenderer = ReactFiberReconciler({
 
-  getRootHostContext(rootContainerInstance : Container) : HostContext {
-    const ownNamespace = rootContainerInstance.namespaceURI || null;
-    const type = rootContainerInstance.tagName;
-    const namespace = getChildNamespace(ownNamespace, type);
-    if (__DEV__) {
-      const isMountingIntoDocument = rootContainerInstance.ownerDocument.documentElement === rootContainerInstance;
-      const validatedTag = isMountingIntoDocument ? '#document' : type.toLowerCase();
-      const ancestorInfo = updatedAncestorInfo(null, validatedTag, null);
-      return {namespace, ancestorInfo};
-    }
-    return namespace;
+  getRootHostContext(
+    rootContainerInstance: Container
+  ): HostContext {
+    return {
+      namespace: getChildNamespace(
+        rootContainerInstance.namespaceURI || null,
+        rootContainerInstance.tagName,
+      ),
+
+      ancestorInfo: updatedAncestorInfo(
+        null,
+        rootContainerInstance.ownerDocument.documentElement === rootContainerInstance
+          ? '#document'
+          : rootContainerInstance.tagName.toLowerCase(),
+        null
+      )
+    };
   },
 
   getChildHostContext(
     parentHostContext : HostContext,
-    type : string,
-  ) : HostContext {
-    if (__DEV__) {
-      const parentHostContextDev = ((parentHostContext : any) : HostContextDev);
-      const namespace = getChildNamespace(parentHostContextDev.namespace, type);
-      const ancestorInfo = updatedAncestorInfo(parentHostContextDev.ancestorInfo, type, null);
-      return {namespace, ancestorInfo};
-    }
-    const parentNamespace = ((parentHostContext : any) : HostContextProd);
-    return getChildNamespace(parentNamespace, type);
+    type              : string,
+  ): HostContext {
+
+    return {
+      namespace     : getChildNamespace(
+        parentHostContext.namespace,
+        type
+      ),
+      ancestorInfo  : updatedAncestorInfo(
+        parentHostContext.ancestorInfo,
+        type,
+        null
+      )
+    };
   },
 
   getPublicInstance(instance) {
     return instance;
   },
 
-  prepareForCommit() : void {
-    eventsEnabled = ReactBrowserEventEmitter.isEnabled();
-    selectionInformation = ReactInputSelection.getSelectionInformation();
+  prepareForCommit(
+  ): void {
+    eventsEnabled         = ReactBrowserEventEmitter.isEnabled();
+    selectionInformation  = ReactInputSelection.getSelectionInformation();
     ReactBrowserEventEmitter.setEnabled(false);
   },
 
@@ -181,65 +192,60 @@ var DOMRenderer = ReactFiberReconciler({
   },
 
   createInstance(
-    type : string,
-    props : Props,
-    rootContainerInstance : Container,
-    hostContext : HostContext,
-    internalInstanceHandle : Object,
-  ) : Instance {
-    let parentNamespace : string;
-    if (__DEV__) {
-      // TODO: take namespace into account when validating.
-      const hostContextDev = ((hostContext : any) : HostContextDev);
-      validateDOMNesting(type, null, null, hostContextDev.ancestorInfo);
-      if (
-        typeof props.children === 'string' ||
-        typeof props.children === 'number'
-      ) {
-        const ownAncestorInfo = updatedAncestorInfo(hostContextDev.ancestorInfo, type, null);
-        validateDOMNesting(null, String(props.children), null, ownAncestorInfo);
-      }
-      parentNamespace = hostContextDev.namespace;
-    } else {
-      parentNamespace = ((hostContext : any) : HostContextProd);
+    type                    : string,
+    props                   : Props,
+    rootContainerInstance   : Container,
+    hostContext             : HostContext,
+    internalInstanceHandle  : Object,
+  ): Instance {
+    validateDOMNesting(type, null, null, hostContext.ancestorInfo);
+
+    if (
+      typeof props.children === 'string' ||
+      typeof props.children === 'number'
+    ) {
+      const ownAncestorInfo = updatedAncestorInfo(hostContext.ancestorInfo, type, null);
+      validateDOMNesting(null, String(props.children), null, ownAncestorInfo);
     }
+    const parentNamespace = hostContext.namespace;
     const domElement : Instance = createElement(type, props, rootContainerInstance, parentNamespace);
     precacheFiberNode(internalInstanceHandle, domElement);
     updateFiberProps(domElement, props);
     return domElement;
   },
 
-  appendInitialChild(parentInstance : Instance, child : Instance | TextInstance) : void {
+  appendInitialChild(
+    parentInstance  : Instance,
+    child           : Instance | TextInstance
+  ): void {
     parentInstance.appendChild(child);
   },
 
   finalizeInitialChildren(
-    domElement : Instance,
-    type : string,
-    props : Props,
+    domElement            : Instance,
+    type                  : string,
+    props                 : Props,
     rootContainerInstance : Container,
-  ) : boolean {
+  ): boolean {
+
     setInitialProperties(domElement, type, props, rootContainerInstance);
     return shouldAutoFocusHostComponent(type, props);
   },
 
   prepareUpdate(
-    domElement : Instance,
-    type : string,
-    oldProps : Props,
-    newProps : Props,
+    domElement            : Instance,
+    type                  : string,
+    oldProps              : Props,
+    newProps              : Props,
     rootContainerInstance : Container,
-    hostContext : HostContext,
+    hostContext           : HostContext,
   ) : null | Array<mixed> {
-    if (__DEV__) {
-      const hostContextDev = ((hostContext : any) : HostContextDev);
-      if (typeof newProps.children !== typeof oldProps.children && (
-        typeof newProps.children === 'string' ||
-        typeof newProps.children === 'number'
-      )) {
-        const ownAncestorInfo = updatedAncestorInfo(hostContextDev.ancestorInfo, type, null);
-        validateDOMNesting(null, String(newProps.children), null, ownAncestorInfo);
-      }
+    if (typeof newProps.children !== typeof oldProps.children && (
+      typeof newProps.children === 'string' ||
+      typeof newProps.children === 'number'
+    )) {
+      const ownAncestorInfo = updatedAncestorInfo(hostContext.ancestorInfo, type, null);
+      validateDOMNesting(null, String(newProps.children), null, ownAncestorInfo);
     }
     return diffProperties(domElement, type, oldProps, newProps, rootContainerInstance);
   },
@@ -285,37 +291,53 @@ var DOMRenderer = ReactFiberReconciler({
   },
 
   createTextInstance(
-    text : string,
-    rootContainerInstance : Container,
-    hostContext : HostContext,
-    internalInstanceHandle : Object
+    text                    : string,
+    rootContainerInstance   : Container,
+    hostContext             : HostContext,
+    internalInstanceHandle  : Object
   ) : TextInstance {
-    if (__DEV__) {
-      const hostContextDev = ((hostContext : any) : HostContextDev);
-      validateDOMNesting(null, text, null, hostContextDev.ancestorInfo);
-    }
-    var textNode : TextInstance = document.createTextNode(text);
+
+    validateDOMNesting(
+      null,
+      text,
+      null,
+      hostContext.ancestorInfo
+    );
+
+    var textNode: TextInstance = document.createTextNode(text);
+
     precacheFiberNode(internalInstanceHandle, textNode);
+
     return textNode;
   },
 
-  commitTextUpdate(textInstance : TextInstance, oldText : string, newText : string) : void {
+  commitTextUpdate(
+    textInstance  : TextInstance,
+    oldText       : string,
+    newText       : string
+  ) : void {
     textInstance.nodeValue = newText;
   },
 
-  appendChild(parentInstance : Instance | Container, child : Instance | TextInstance) : void {
+  appendChild(
+    parentInstance  : Instance | Container,
+    child           : Instance | TextInstance
+  ): void {
     parentInstance.appendChild(child);
   },
 
   insertBefore(
-    parentInstance : Instance | Container,
-    child : Instance | TextInstance,
-    beforeChild : Instance | TextInstance
+    parentInstance  : Instance | Container,
+    child           : Instance | TextInstance,
+    beforeChild     : Instance | TextInstance
   ) : void {
     parentInstance.insertBefore(child, beforeChild);
   },
 
-  removeChild(parentInstance : Instance | Container, child : Instance | TextInstance) : void {
+  removeChild(
+    parentInstance  : Instance | Container,
+    child           : Instance | TextInstance
+  ) : void {
     parentInstance.removeChild(child);
   },
 
@@ -343,105 +365,64 @@ function warnAboutUnstableUse() {
 
 function renderSubtreeIntoContainer(
   parentComponent : ?ReactComponent<any, any, any>,
-  children : ReactNodeList,
-  containerNode : DOMContainerElement | Document,
-  callback: ?Function
+  children        : ReactNodeList,
+  containerNode   : DOMContainerElement | Document,
+  callback        : ?Function
 ) {
   validateContainer(containerNode);
 
-  let container : DOMContainerElement =
-    containerNode.nodeType === DOCUMENT_NODE ? (containerNode : any).documentElement : (containerNode : any);
+  let container : DOMContainerElement = (
+    containerNode.nodeType === DOCUMENT_NODE
+      ? (containerNode : any).documentElement
+      : (containerNode : any)
+  );
+
   let root = container._reactRootContainer;
+
   if (!root) {
     // First clear any existing content.
     while (container.lastChild) {
       container.removeChild(container.lastChild);
     }
+
     const newRoot = DOMRenderer.createContainer(container);
+
     root = container._reactRootContainer = newRoot;
+
     // Initial mount should not be batched.
     DOMRenderer.unbatchedUpdates(() => {
       DOMRenderer.updateContainer(children, newRoot, parentComponent, callback);
     });
+
   } else {
     DOMRenderer.updateContainer(children, root, parentComponent, callback);
   }
+
   return DOMRenderer.getPublicRootInstance(root);
 }
 
 var ReactDOM = {
 
-  render(element : ReactElement<any>, container : DOMContainerElement, callback: ?Function) {
+  render(
+    element   : ReactElement<any>,
+    container : DOMContainerElement,
+    callback  : ?Function
+  ) {
     validateContainer(container);
 
-    if (ReactFeatureFlags.disableNewFiberFeatures) {
-      // Top-level check occurs here instead of inside child reconciler because
-      // because requirements vary between renderers. E.g. React Art
-      // allows arrays.
-      if (!isValidElement(element)) {
-        if (typeof element === 'string') {
-          invariant(
-            false,
-            'ReactDOM.render(): Invalid component element. Instead of ' +
-            'passing a string like \'div\', pass ' +
-            'React.createElement(\'div\') or <div />.'
-          );
-        } else if (typeof element === 'function') {
-          invariant(
-            false,
-            'ReactDOM.render(): Invalid component element. Instead of ' +
-            'passing a class like Foo, pass React.createElement(Foo) ' +
-            'or <Foo />.'
-          );
-        } else if (element != null && typeof element.props !== 'undefined') {
-          // Check if it quacks like an element
-          invariant(
-            false,
-            'ReactDOM.render(): Invalid component element. This may be ' +
-            'caused by unintentionally loading two independent copies ' +
-            'of React.'
-          );
-        } else {
-          invariant(
-            false,
-            'ReactDOM.render(): Invalid component element.'
-          );
-        }
-      }
-    }
-
-    if (__DEV__) {
-      const isRootRenderedBySomeReact = Boolean(container._reactRootContainer);
-      const rootEl = getReactRootElementInContainer(container);
-      const hasNonRootReactChild = Boolean(rootEl && ReactDOMComponentTree.getInstanceFromNode(rootEl));
-
-      warning(
-        !hasNonRootReactChild ||
-        isRootRenderedBySomeReact,
-        'render(...): Replacing React-rendered children with a new root ' +
-        'component. If you intended to update the children of this node, ' +
-        'you should instead have the existing children update their state ' +
-        'and render the new components instead of calling ReactDOM.render.'
-      );
-
-      warning(
-        !container.tagName || container.tagName.toUpperCase() !== 'BODY',
-        'render(): Rendering components directly into document.body is ' +
-        'discouraged, since its children are often manipulated by third-party ' +
-        'scripts and browser extensions. This may lead to subtle ' +
-        'reconciliation issues. Try rendering into a container element created ' +
-        'for your app.'
-      );
-    }
-
-    return renderSubtreeIntoContainer(null, element, container, callback);
+    return renderSubtreeIntoContainer(
+      null,
+      element,
+      container,
+      callback
+    );
   },
 
   unstable_renderSubtreeIntoContainer(
     parentComponent : ReactComponent<any, any, any>,
-    element : ReactElement<any>,
-    containerNode : DOMContainerElement | Document,
-    callback: ?Function
+    element         : ReactElement<any>,
+    containerNode   : DOMContainerElement | Document,
+    callback        : ?Function
   ) {
     invariant(
       parentComponent != null && ReactInstanceMap.has(parentComponent),
