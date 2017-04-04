@@ -204,11 +204,25 @@ var DOMRenderer = ReactFiberReconciler({
       typeof props.children === 'string' ||
       typeof props.children === 'number'
     ) {
-      const ownAncestorInfo = updatedAncestorInfo(hostContext.ancestorInfo, type, null);
-      validateDOMNesting(null, String(props.children), null, ownAncestorInfo);
+      validateDOMNesting(
+        null,
+        String(props.children),
+        null,
+        updatedAncestorInfo(
+          hostContext.ancestorInfo,
+          type,
+          null
+        )
+      );
     }
     const parentNamespace = hostContext.namespace;
-    const domElement : Instance = createElement(type, props, rootContainerInstance, parentNamespace);
+    const domElement: Instance = createElement(
+      type,
+      props,
+      rootContainerInstance,
+      parentNamespace
+    );
+
     precacheFiberNode(internalInstanceHandle, domElement);
     updateFiberProps(domElement, props);
     return domElement;
@@ -228,7 +242,12 @@ var DOMRenderer = ReactFiberReconciler({
     rootContainerInstance : Container,
   ): boolean {
 
-    setInitialProperties(domElement, type, props, rootContainerInstance);
+    setInitialProperties(
+      domElement,
+      type,
+      props,
+      rootContainerInstance
+    );
     return shouldAutoFocusHostComponent(type, props);
   },
 
@@ -247,7 +266,13 @@ var DOMRenderer = ReactFiberReconciler({
       const ownAncestorInfo = updatedAncestorInfo(hostContext.ancestorInfo, type, null);
       validateDOMNesting(null, String(newProps.children), null, ownAncestorInfo);
     }
-    return diffProperties(domElement, type, oldProps, newProps, rootContainerInstance);
+    return diffProperties(
+      domElement,
+      type,
+      oldProps,
+      newProps,
+      rootContainerInstance
+    );
   },
 
   commitMount(
@@ -256,22 +281,37 @@ var DOMRenderer = ReactFiberReconciler({
     newProps : Props,
     internalInstanceHandle : Object,
   ) : void {
-    ((domElement : any) : HTMLButtonElement | HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement).focus();
+    ((domElement : any)
+      : HTMLButtonElement
+      | HTMLInputElement
+      | HTMLSelectElement
+      | HTMLTextAreaElement
+    ).focus();
   },
 
   commitUpdate(
-    domElement : Instance,
-    updatePayload : Array<mixed>,
-    type : string,
-    oldProps : Props,
-    newProps : Props,
-    internalInstanceHandle : Object,
+    domElement              : Instance,
+    updatePayload           : Array<mixed>,
+    type                    : string,
+    oldProps                : Props,
+    newProps                : Props,
+    internalInstanceHandle  : Object,
   ) : void {
     // Update the props handle so that we know which props are the ones with
     // with current event handlers.
-    updateFiberProps(domElement, newProps);
+    updateFiberProps(
+      domElement,
+      newProps
+    );
+
     // Apply the diff to the DOM node.
-    updateProperties(domElement, updatePayload, type, oldProps, newProps);
+    updateProperties(
+      domElement,
+      updatePayload,
+      type,
+      oldProps,
+      newProps
+    );
   },
 
   shouldSetTextContent(props : Props) : boolean {

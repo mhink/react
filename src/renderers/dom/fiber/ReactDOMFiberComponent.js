@@ -310,10 +310,10 @@ function isCustomComponent(tagName, props) {
 }
 
 function setInitialDOMProperties(
-  domElement : Element,
-  rootContainerElement : Element,
-  nextProps : Object,
-  isCustomComponentTag : boolean,
+  domElement            : Element,
+  rootContainerElement  : Element,
+  nextProps             : Object,
+  isCustomComponentTag  : boolean,
 ) : void {
   for (var propKey in nextProps) {
     var nextProp = nextProps[propKey];
@@ -371,10 +371,10 @@ function setInitialDOMProperties(
 }
 
 function updateDOMProperties(
-  domElement : Element,
-  updatePayload : Array<any>,
+  domElement            : Element,
+  updatePayload         : Array<any>,
   wasCustomComponentTag : boolean,
-  isCustomComponentTag : boolean,
+  isCustomComponentTag  : boolean,
 ) : void {
   // TODO: Handle wasCustomComponentTag
   for (var i = 0; i < updatePayload.length; i += 2) {
@@ -445,11 +445,11 @@ var ReactDOMFiberComponent = {
   },
 
   createElement(
-    type : string,
-    props : Object,
-    rootContainerElement : Element,
-    parentNamespace : string
-  ) : Element {
+    type                  : string,
+    props                 : Object,
+    rootContainerElement  : Element,
+    parentNamespace       : string
+  ): Element {
     // We create tags in the namespace of their parent container, except HTML
     // tags get no namespace.
     var ownerDocument = rootContainerElement.ownerDocument;
@@ -496,11 +496,11 @@ var ReactDOMFiberComponent = {
   },
 
   setInitialProperties(
-    domElement : Element,
-    tag : string,
-    rawProps : Object,
-    rootContainerElement : Element
-  ) : void {
+    domElement            : Element,
+    tag                   : string,
+    rawProps              : Object,
+    rootContainerElement  : Element
+  ): void {
 
     var isCustomComponentTag = isCustomComponent(tag, rawProps);
     if (__DEV__) {
@@ -599,11 +599,11 @@ var ReactDOMFiberComponent = {
 
   // Calculate the diff between the two objects.
   diffProperties(
-    domElement : Element,
-    tag : string,
-    lastRawProps : Object,
-    nextRawProps : Object,
-    rootContainerElement : Element,
+    domElement            : Element,
+    tag                   : string,
+    lastRawProps          : Object,
+    nextRawProps          : Object,
+    rootContainerElement  : Element,
   ) : null | Array<mixed> {
     if (__DEV__) {
       validatePropertiesInDevelopment(tag, nextRawProps);
@@ -776,11 +776,11 @@ var ReactDOMFiberComponent = {
 
   // Apply the diff.
   updateProperties(
-    domElement : Element,
+    domElement    : Element,
     updatePayload : Array<any>,
-    tag : string,
-    lastRawProps : Object,
-    nextRawProps : Object
+    tag           : string,
+    lastRawProps  : Object,
+    nextRawProps  : Object
   ) : void {
     var wasCustomComponentTag = isCustomComponent(tag, lastRawProps);
     var isCustomComponentTag = isCustomComponent(tag, nextRawProps);
